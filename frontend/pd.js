@@ -1,7 +1,7 @@
 /*========================================================================================
   pd.js  —  Project Details
 ========================================================================================*/
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = 'taskflow-production-api.up.railway.app';
 const params = new URLSearchParams(window.location.search);
 const project_id = params.get('id');
 
