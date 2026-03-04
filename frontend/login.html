@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskFlow - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #4f46e5, #9333ea);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        /* Left Section */
+        .left {
+            flex: 1;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .left p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Right Section */
+        .right {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .right h2 {
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #6366f1;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #6366f1;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #4f46e5;
+        }
+
+        .extra {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .extra a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+
+        .extra a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media(max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left {
+                display: none; /* Hide illustration section on mobile */
+            }
+        }
+
+        #errormessage{
+            color:red;
+            font-size: small;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="left">
+            <h1>Welcome Back!</h1>
+            <p>Manage your tasks efficiently and stay productive with TaskFlow SaaS platform.</p>
+        </div>
+
+        <div class="right">
+            <h2>Login to Your Account</h2>
+
+            <form onsubmit="login(event)">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input id="username" placeholder="Enter your username" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <p id="errormessage"></p>
+                <button type="submit" class="btn" id="loginbtn">Login</button>
+
+                <div class="extra">
+                    <p>Don't have an account? <a href="#">Sign Up</a></p>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</body>
+<script>
+    username=document.getElementById('username')
+    password=document.getElementById('password')
+    loginbtn=document.getElementById('loginbtn')
+
+    async function login(event){
+
+        event.preventDefault()
+
+        loginbtn.textContent='Logging in --'
+
+        response=await fetch("http://127.0.0.1:8000/api/token/",{
+            method:'POST',
+            headers:{ "Content-Type": "application/json" },
+            body:JSON.stringify({
+                username:username.value,
+                password:password.value
+            }),
+
+        })
+
+        data=await response.json()
+
+        if (response.ok){
+            localStorage.setItem('accessToken',data.access)
+            localStorage.setItem('refreshToken', data.refresh)
+            window.location.href = 'index.html' 
+
+        }else{
+            errorbox=document.getElementById('errormessage')
+            errorbox.textContent='Invalid username or password';
+            loginbtn.textContent='Login'
+
+        }
+
+
+
+
+    }
+
+</script>
+</html>

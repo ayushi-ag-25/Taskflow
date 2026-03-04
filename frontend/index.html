@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>TaskFlow — Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <style>
+        /* Extra fields on project card */
+        .pc-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .pc-meta-item {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(13,21,38,.55);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            animation: modalFadeIn .18s ease;
+        }
+        .modal-overlay.open { display: flex; }
+        @keyframes modalFadeIn { from { opacity:0; } to { opacity:1; } }
+        .modal-box {
+            position: relative;
+            width: 100%;
+            max-width: 960px;
+            height: 90vh;
+            background: #f3f5f9;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 24px 64px rgba(13,21,38,.28), 0 4px 16px rgba(13,21,38,.12);
+            animation: modalSlideUp .2s ease;
+        }
+        @keyframes modalSlideUp {
+            from { transform: translateY(24px); opacity:0; }
+            to   { transform: translateY(0);    opacity:1; }
+        }
+        #projectModalFrame { width:100%; height:100%; border:none; border-radius:18px; }
+        .modal-close {
+            position: absolute; top:14px; right:16px; z-index:10;
+            width:32px; height:32px; border-radius:50%; border:none;
+            background: rgba(13,21,38,.08); color:#5c6a82; font-size:14px;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            transition: background .13s, color .13s, transform .12s;
+        }
+        .modal-close:hover { background:#e03b3b; color:#fff; transform:scale(1.08); }
+        @media(max-width:640px) {
+            .modal-overlay { padding:0; }
+            .modal-box { height:100vh; border-radius:0; max-width:100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">T</div>
+            <span class="brand-name">TaskFlow</span>
+        </div>
+        <nav>
+            <button class="nav-btn active" id="projectsBtn"><span class="ni">⊞</span> Projects</button>
+            <button class="nav-btn"        id="tasksBtn">   <span class="ni">✓</span> My Tasks</button>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="nav-btn" id="logoutBtn"><span class="ni">⇥</span> Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+        <!-- Header -->
+        <div class="pg-header">
+            <div>
+                <h1>Dashboard</h1>
+                <div class="pg-sub" id="welcomeSub">Loading…</div>
+            </div>
+            <button class="btn-primary" onclick="create_project()">+ New Project</button>
+        </div>
+
+        <!-- Projects Section -->
+        <section class="card">
+            <div class="card-head">
+                <h2>Your Projects</h2>
+            </div>
+            <div class="card-body">
+                <div class="project-grid" id="projectList">
+                    <div class="empty-state"><span class="ei">⊞</span><p>Loading projects…</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tasks Section -->
+        <section class="card">
+            <div class="card-head">
+                <h2>
+                    <span id="tasksHeading">My Tasks</span>
+                    <span id="tasksProjLabel" class="tasks-proj-label" style="display:none"></span>
+                </h2>
+                <!-- toright kept from original, hidden -->
+                <div class="toright" style="display:none" onclick="get_all_tasks()"><b>&#8634;</b></div>
+                <button class="btn-refresh" id="btnRefresh" title="Reset — show all my tasks">↻</button>
+            </div>
+
+            <!-- task-form kept from original, hidden on dashboard -->
+            <div class="task-form" style="display:none">
+                <input type="text" placeholder="Task title">
+                <select>
+                    <option>To Do</option>
+                    <option>In Progress</option>
+                    <option>Done</option>
+                </select>
+                <button class="primary-btn">Add Task</button>
+            </div>
+
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Project</th>
+                        <th>Assigned To</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="taskList">
+                    <tr class="t-empty"><td colspan="6">Loading…</td></tr>
+                </tbody>
+            </table>
+
+            <!-- task-list ul kept from original (hidden) -->
+            <ul class="task-list" id="task-list" style="display:none"></ul>
+
+        </section>
+
+    </main>
+</div>
+
+<!-- Project Details Modal — owner projects open inside here -->
+<div id="projectModal" class="modal-overlay" onclick="handleModalBackdropClick(event)">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeProjectModal()" title="Close">✕</button>
+        <iframe id="projectModalFrame" src="" frameborder="0"></iframe>
+    </div>
+</div>
+
+<script src="index.js"></script>
+</body>
+</html>

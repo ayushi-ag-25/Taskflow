@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Project - TaskFlow</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #f4f6fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: #4f46e5;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            border-color: #4f46e5;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #4f46e5;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #4338ca;
+        }
+
+        .back-link {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .back-link a {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+
+        @media(max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Create New Project</h2>
+
+        <form id="projectForm" onsubmit="create_project(event)">
+            <div class="input-group">
+                <label>Project Name</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="input-group">
+                <label>Description</label>
+                <textarea id="des" rows="4" required></textarea>
+            </div>
+
+            <button type="submit" class="btn">Create Project</button>
+        </form>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+
+        accessToken = localStorage.getItem('accessToken')
+        tasks = {}
+
+        async function refreshAccessToken() {
+            const refresh = localStorage.getItem('refreshToken')
+
+            // no refresh token = not logged in at all
+            if (!refresh) {
+                window.location.href = 'login.html'
+                return null
+            }
+
+            const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refresh: refresh })
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                localStorage.setItem('accessToken', data.access) // save new token
+                return data.access
+            } else {
+                // refresh token also expired → force login
+                localStorage.clear()
+                window.location.href = 'login.html'
+                return null
+            }
+        }
+
+        async function safe_fetch(url, options = {}) {
+
+            let token = localStorage.getItem('accessToken')
+
+            // attach token to headers
+            options.headers = {
+                ...options.headers,
+                'Authorization': 'Bearer ' + token
+            }
+
+            let response = await fetch(url, options)
+
+            // token expired!
+            if (response.status === 401) {
+                token = await refreshAccessToken()
+                if (!token) return null  // redirected to login
+
+                // retry request with new token
+                options.headers['Authorization'] = 'Bearer ' + token
+                response = await fetch(url, options)
+            }
+
+            return response
+        }
+
+
+        async function create_project(event) {
+            event.preventDefault()
+
+            name = document.getElementById('name').value
+            description = document.getElementById('des').value
+
+            const response = await safe_fetch('http://127.0.0.1:8000/api/projects/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: name,
+                    description: description
+                })
+            })
+
+
+            if (!response) alert('something went wrong')
+
+            if (!response.ok) {
+                const error = await response.json()
+                console.error('Error:', error)
+                alert('Failed to create project')
+                return
+            }
+
+            const project = await response.json()
+            console.log('Created:', project)
+            // redirect or update UI
+            window.location.href = 'index.html'
+        }
+
+    </script>
+
+</body>
+
+</html>

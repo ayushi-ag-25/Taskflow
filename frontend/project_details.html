@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Details — TaskFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+    --bg:       #f0f2f8;
+    --white:    #ffffff;
+    --accent:   #4f46e5;
+    --accent-d: #4338ca;
+    --accent-l: #eef0ff;
+    --ink:      #0d1526;
+    --ink2:     #2d3a4e;
+    --sub:      #5c6a82;
+    --muted:    #8e9cae;
+    --border:   #e2e7f0;
+    --red:      #e03b3b;
+    --red-l:    #fff0f0;
+    --green:    #16a34a;
+    --green-l:  #dcfce7;
+    --amber:    #d97706;
+    --amber-l:  #fef9c3;
+    --purple:   #7c3aed;
+    --purple-l: #ede9fe;
+    --sh:       0 1px 3px rgba(13,21,38,.06), 0 4px 16px rgba(13,21,38,.08);
+    --sh-lg:    0 8px 32px rgba(13,21,38,.10);
+}
+
+html { font-size: 14px; }
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 28px 36px 48px;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+}
+
+/* ── Back link ── */
+a.back {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--sub); font-size: 13px; font-weight: 600;
+    text-decoration: none; margin-bottom: 20px;
+    transition: color .12s;
+}
+a.back:hover { color: var(--ink); }
+
+/* ── Page header ── */
+.page-header {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 16px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+.project-title {
+    font-size: 26px; font-weight: 800;
+    color: var(--ink); letter-spacing: -.4px;
+    line-height: 1.2;
+}
+.project-id-badge {
+    font-size: 11px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--muted);
+    background: var(--white); border: 1px solid var(--border);
+    padding: 3px 10px; border-radius: 99px; margin-top: 6px;
+    display: inline-block;
+}
+
+/* ── Top cards row ── */
+.top-section {
+    display: flex; gap: 16px; margin-bottom: 22px; flex-wrap: wrap;
+}
+
+.card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--sh);
+    flex: 1; min-width: 280px;
+    padding: 22px 24px;
+}
+
+.card-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+.card-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted);
+}
+
+/* Description */
+.desc-text {
+    font-size: 13.5px; color: var(--ink2);
+    line-height: 1.75;
+}
+.desc-textarea {
+    width: 100%; padding: 10px 12px;
+    border: 1.5px solid var(--accent);
+    border-radius: 8px; font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13.5px; color: var(--ink); line-height: 1.7;
+    outline: none; resize: vertical; min-height: 80px;
+    background: var(--accent-l);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.08);
+}
+.desc-actions {
+    display: flex; gap: 7px; margin-top: 10px; flex-wrap: wrap;
+}
+
+/* ── Members ── */
+.members-list {
+    display: flex; flex-wrap: wrap; gap: 7px;
+    min-height: 32px; align-items: center;
+}
+
+/* member chip with × button */
+.member-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--accent-l); color: var(--accent);
+    border: 1px solid #c7d2fe;
+    padding: 5px 8px 5px 12px; border-radius: 99px;
+    font-size: 12.5px; font-weight: 600;
+    transition: background .12s;
+}
+.member-chip:hover { background: #e0e7ff; }
+.chip-remove {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: none; background: rgba(79,70,229,.15);
+    color: var(--accent); font-size: 12px; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    line-height: 1; padding: 0;
+    transition: background .12s, color .12s;
+}
+.chip-remove:hover { background: var(--red); color: #fff; }
+
+/* Add member icon button */
+.add-member-icon-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    background: var(--accent-l); color: var(--accent);
+    font-size: 18px; font-weight: 400; line-height: 1;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .14s, transform .12s; flex-shrink: 0;
+}
+.add-member-icon-btn:hover { background: #e0e7ff; transform: scale(1.1); }
+
+/* Member search panel */
+.member-panel {
+    display: none; margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--border);
+}
+.member-panel-label { font-size: 12.5px; color: var(--sub); margin-bottom: 8px; font-weight: 500; }
+.member-panel-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+/* ── Buttons ── */
+.btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 8px 16px; border-radius: 8px; border: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background .13s, transform .1s, box-shadow .13s;
+    white-space: nowrap;
+}
+.btn-primary {
+    background: var(--accent); color: #fff;
+    box-shadow: 0 2px 8px rgba(79,70,229,.28);
+}
+.btn-primary:hover  { background: var(--accent-d); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(79,70,229,.36); }
+.btn-primary:active { transform: none; }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.btn-ghost {
+    background: var(--bg); color: var(--sub);
+    border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--border); color: var(--ink); }
+
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 7px; }
+.btn-danger { background: var(--red-l); color: var(--red); border: 1px solid #fecaca; }
+.btn-danger:hover { background: var(--red); color: #fff; }
+.btn-success { background: var(--green-l); color: var(--green); border: 1px solid #bbf7d0; }
+.btn-success:hover { background: var(--green); color: #fff; }
+
+/* confirm / cancel member buttons (keep original class names) */
+.confirm-member-btn {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 7px; padding: 8px 16px; font-size: 13px; font-weight: 600;
+    font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer;
+    transition: background .13s;
+    box-shadow: 0 2px 6px rgba(79,70,229,.25);
+}
+.confirm-member-btn:hover    { background: var(--accent-d); }
+.confirm-member-btn:disabled { opacity: .5; cursor: not-allowed; }
+.cancel-member-btn {
+    background: var(--bg); color: var(--sub);
+    border: 1px solid var(--border);
+    border-radius: 7px; padding: 8px 12px; font-size: 13px; font-weight: 500;
+    font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer;
+    transition: background .12s;
+}
+.cancel-member-btn:hover { background: var(--border); }
+
+/* ── Add Task button ── */
+.add-task-btn {
+    background: var(--accent); color: #fff;
+    padding: 10px 20px; border: none; border-radius: 10px;
+    cursor: pointer; margin-bottom: 18px; font-size: 13px; font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: background .13s, transform .1s, box-shadow .13s;
+    box-shadow: 0 2px 8px rgba(79,70,229,.28);
+}
+.add-task-btn:hover { background: var(--accent-d); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(79,70,229,.36); }
+
+/* ── Task form ── */
+.task-form {
+    display: none;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--sh);
+    padding: 24px 26px;
+    margin-bottom: 22px;
+}
+.task-form-title {
+    font-size: 15px; font-weight: 800;
+    color: var(--ink); margin-bottom: 20px;
+    padding-bottom: 14px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.input-group { margin-bottom: 14px; }
+.input-group label {
+    display: block; margin-bottom: 6px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+}
+.input-group input,
+.input-group textarea,
+.input-group select {
+    width: 100%; padding: 11px 13px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px; outline: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13.5px; color: var(--ink);
+    background: #f8fafc;
+    transition: border-color .15s, box-shadow .15s;
+    -webkit-appearance: none;
+}
+.input-group input::placeholder,
+.input-group textarea::placeholder { color: #c0c8d4; }
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.1);
+    background: var(--white);
+}
+.input-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%238e9cae' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+    background-size: 16px; padding-right: 32px; background-color: #f8fafc;
+}
+.input-group textarea { resize: vertical; min-height: 70px; }
+
+.submit-btn {
+    background: var(--accent); color: #fff;
+    padding: 10px 22px; border: none; border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: background .13s;
+    box-shadow: 0 2px 6px rgba(79,70,229,.25);
+}
+.submit-btn:hover    { background: var(--accent-d); }
+.submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Task list section ── */
+.task-section {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--sh);
+}
+.task-section-head {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+}
+.task-section-head h2 {
+    font-size: 15px; font-weight: 800; color: var(--ink);
+    display: flex; align-items: center; gap: 8px;
+}
+.task-count-pill {
+    font-size: 11.5px; font-weight: 700;
+    padding: 3px 10px; border-radius: 99px;
+    background: var(--accent-l); color: var(--accent);
+    border: 1px solid #c7d2fe;
+}
+
+/* task-list = original ID kept */
+.task-list { width: 100%; }
+
+.task-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 70px;
+    padding: 13px 22px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: background .1s;
+}
+.task-row:last-child { border-bottom: none; }
+.task-row.header {
+    background: #f8fafc;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+    border-bottom: 1.5px solid var(--border);
+}
+.task-row:not(.header):hover { background: #f8fafd; }
+
+/* task title cell */
+.task-title-cell { display: flex; flex-direction: column; gap: 2px; }
+.task-title-text { font-weight: 600; color: var(--ink); font-size: 13.5px; }
+.task-sub { font-size: 11.5px; color: var(--muted); }
+
+/* status badges */
+.status {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 99px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase;
+}
+.status::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+}
+.pending   { background: var(--amber-l); color: #854d0e; border: 1px solid #fde68a; }
+.pending::before   { background: var(--amber); }
+.progress  { background: var(--purple-l); color: #5b21b6; border: 1px solid #ddd6fe; }
+.progress::before  { background: var(--purple); }
+.completed { background: var(--green-l);  color: #14532d; border: 1px solid #bbf7d0; }
+.completed::before { background: var(--green); }
+
+/* task action buttons — edit + delete */
+.task-actions { display: flex; justify-content: flex-end; gap: 4px; }
+.task-del-btn, .task-edit-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 13px;
+    padding: 4px 6px; border-radius: 6px;
+    opacity: 0;
+    transition: color .12s, background .12s, opacity .12s;
+}
+.task-row:hover .task-del-btn,
+.task-row:hover .task-edit-btn { opacity: 1; }
+.task-del-btn  { color: var(--muted); }
+.task-del-btn:hover  { color: var(--red);    background: var(--red-l); }
+.task-edit-btn { color: var(--muted); }
+.task-edit-btn:hover { color: var(--accent); background: var(--accent-l); }
+
+/* ── Inline edit panel ── */
+.edit-panel {
+    background: var(--accent-l);
+    border: 1.5px solid #c7d2fe;
+    border-radius: 12px;
+    margin: 4px 0 8px;
+    overflow: hidden;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity .18s, transform .18s;
+}
+.edit-panel-inner { padding: 20px 22px; }
+.edit-panel-title {
+    font-size: 13px; font-weight: 800;
+    color: var(--accent); letter-spacing: .04em;
+    text-transform: uppercase; margin-bottom: 16px;
+}
+.edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 0;
+}
+.edit-field { display: flex; flex-direction: column; gap: 5px; }
+.edit-field label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--sub);
+}
+.edit-field input,
+.edit-field select,
+.edit-field textarea {
+    padding: 9px 11px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px; outline: none;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px; color: var(--ink); background: var(--white);
+    transition: border-color .15s, box-shadow .15s;
+    -webkit-appearance: none;
+}
+.edit-field input:focus,
+.edit-field select:focus,
+.edit-field textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.1);
+}
+.edit-field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%238e9cae' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+    background-size: 16px; padding-right: 32px;
+}
+.edit-field textarea { resize: vertical; min-height: 60px; }
+.edit-actions { display: flex; gap: 8px; margin-top: 14px; }
+@media(max-width: 640px) { .edit-grid { grid-template-columns: 1fr; } }
+
+/* ── Autocomplete (keep original class names) ── */
+.search-wrap { position: relative; width: 100%; }
+.search-wrap input {
+    width: 100%; padding: 10px 32px 10px 12px;
+    border: 1.5px solid var(--border); border-radius: 8px; outline: none;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; color: var(--ink);
+    background: #f8fafc;
+    transition: border-color .15s, box-shadow .15s;
+}
+.search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,.1); background: var(--white); }
+.s-clear {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: #e8ecf2; border: none; border-radius: 50%;
+    width: 18px; height: 18px; font-size: 9px; cursor: pointer;
+    display: none; align-items: center; justify-content: center; color: var(--sub);
+}
+.s-clear.on { display: flex; }
+.s-clear:hover { background: var(--border); }
+.s-drop {
+    display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: var(--white); border: 1.5px solid var(--border);
+    border-radius: 10px; box-shadow: 0 6px 20px rgba(13,21,38,.1);
+    z-index: 999; overflow: hidden;
+}
+.s-drop.open { display: block; }
+.s-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 10px 13px; cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px; color: var(--ink); transition: background .1s;
+}
+.s-item:last-child { border-bottom: none; }
+.s-item:hover, .s-item.active { background: var(--accent-l); }
+.s-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.s-item mark {
+    background: rgba(79,70,229,.13); color: var(--accent);
+    border-radius: 2px; padding: 0 2px; font-weight: 600; font-style: normal;
+}
+.s-empty { padding: 13px; font-size: 13px; color: var(--muted); text-align: center; }
+
+/* ── Responsive ── */
+@media(max-width: 768px) {
+    body { padding: 20px 16px 40px; }
+    .project-title { font-size: 22px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .task-row { grid-template-columns: 1fr; gap: 6px; padding: 14px 16px; }
+    .task-row.header { display: none; }
+    .task-del-btn { opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- Back link -->
+<a href="index.html" class="back" onclick="handleBack(event)">← Dashboard</a>
+
+<!-- Page header -->
+<div class="page-header">
+    <div>
+        <h1 class="project-title" id="project-title">Loading…</h1>
+        <span class="project-id-badge">Project #<span id="project-id-display"></span></span>
+    </div>
+    <button class="add-task-btn" id="addTaskBtn">+ Add Task</button>
+</div>
+
+<!-- Top cards -->
+<div class="top-section">
+
+    <!-- Description card -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-label">Description</span>
+            <div class="desc-actions">
+                <button class="btn btn-ghost btn-sm" id="editDescBtn" onclick="enableEditDescription()">✏ Edit</button>
+                <button class="btn btn-success btn-sm" id="saveDescBtn"   style="display:none">Save</button>
+                <button class="btn btn-ghost   btn-sm" id="cancelDescBtn" style="display:none">Cancel</button>
+            </div>
+        </div>
+        <p id="description" class="desc-text">Loading…</p>
+    </div>
+
+    <!-- Members card -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-label">Members</span>
+            <button class="add-member-icon-btn" id="addMemberBtn" title="Add member">+</button>
+        </div>
+
+        <div class="members-list" id="members-list"></div>
+
+        <!-- search panel -->
+        <div class="member-panel" id="memberPanel">
+            <p class="member-panel-label">Search a user to add to this project:</p>
+            <div class="search-wrap">
+                <input type="text" id="memberInput" placeholder="Type username…" autocomplete="off">
+                <button type="button" class="s-clear" id="memberClear">✕</button>
+                <div class="s-drop" id="memberDrop"></div>
+            </div>
+            <input type="hidden" id="memberUserId">
+            <div class="member-panel-actions">
+                <button class="confirm-member-btn" id="confirmAddMember">Add Member</button>
+                <button class="cancel-member-btn"  id="cancelMember">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Task form -->
+<form class="task-form" id="taskForm">
+    <div class="task-form-title">✦ Create New Task</div>
+    <div class="input-group">
+        <label>Task Title</label>
+        <input type="text" id="taskTitle" placeholder="What needs to be done?">
+    </div>
+    <div class="form-grid">
+        <div class="input-group">
+            <label>Assign To</label>
+            <select id="taskAssignTo">
+                <option value="">— Select member —</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Due Date</label>
+            <input type="date" id="taskDueDate">
+        </div>
+    </div>
+    <div class="input-group">
+        <label>Description</label>
+        <textarea id="taskdescription" placeholder="Add a brief description…"></textarea>
+    </div>
+    <button type="submit" class="submit-btn">Create Task</button>
+</form>
+
+<!-- Task list -->
+<div class="task-section">
+    <div class="task-section-head">
+        <h2>Tasks <span class="task-count-pill" id="taskCountPill">0</span></h2>
+    </div>
+    <div class="task-list" id="task-list">
+        <div class="task-row header">
+            <div>Task</div>
+            <div>Assigned To</div>
+            <div>Status</div>
+            <div>Due Date</div>
+            <div></div>
+        </div>
+    </div>
+</div>
+
+<script src="pd.js"></script>
+<script>
+    // Set project id badge
+    document.getElementById('project-id-display').textContent = new URLSearchParams(window.location.search).get('id') || '';
+
+    // Keep task count pill in sync
+    const _origRenderTasks = renderTasks;
+    function updateTaskPill() {
+        const rows = document.querySelectorAll('#task-list .task-row:not(.header):not(.empty-row)');
+        const pill = document.getElementById('taskCountPill');
+        if (pill) pill.textContent = rows.length + ' task' + (rows.length !== 1 ? 's' : '');
+    }
+    // Observe task list changes to keep pill updated
+    new MutationObserver(updateTaskPill).observe(
+        document.getElementById('task-list'), { childList: true, subtree: true }
+    );
+</script>
+</body>
+</html>
