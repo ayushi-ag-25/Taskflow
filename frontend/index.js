@@ -4,6 +4,9 @@
   get_all_tasks, create_project, openProject
   Added: renderProjectCard, modal logic, delete project/task, auth helpers
 */
+if (!localStorage.getItem('accessToken') && !localStorage.getItem('refreshToken')) {
+    window.location.href = 'login.html';
+}
 
 let currentUserId = null;
 const API_BASE = 'https://taskflow-production-api.up.railway.app';
