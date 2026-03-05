@@ -4,6 +4,17 @@ A full-stack project and task management web application built with **Django RES
 
 ---
 
+## 🚀 [Try the Live App →](https://projects-with-taskflow.netlify.app/)
+
+> 💡 **Demo credentials — use these to log in and explore:**
+>
+> | Field | Value |
+> |---|---|
+> | 👤 Username | `client1` |
+> | 🔑 Password | `passwordclient1` |
+
+---
+
 ## 🌐 Live Demo
 
 | Service | Link |
