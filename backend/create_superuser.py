@@ -12,4 +12,3 @@ if not User.objects.filter(username='admin').exists():
     print('Superuser created')
 else:
     print('Superuser already exists')
-```
