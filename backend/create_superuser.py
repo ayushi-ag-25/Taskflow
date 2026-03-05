@@ -1,6 +1,8 @@
 import os
 import django
 
+#superuser creation script
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'taskflow.settings')
 django.setup()
 
