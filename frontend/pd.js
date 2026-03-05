@@ -1,7 +1,7 @@
 /*========================================================================================
   pd.js  —  Project Details
 ========================================================================================*/
-const API_BASE = 'taskflow-production-api.up.railway.app';
+const API_BASE = 'https://taskflow-production-api.up.railway.app';
 const params = new URLSearchParams(window.location.search);
 const project_id = params.get('id');
 

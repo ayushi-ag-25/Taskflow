@@ -6,7 +6,7 @@
 */
 
 let currentUserId = null;
-const API_BASE = 'taskflow-production-api.up.railway.app';
+const API_BASE = 'https://taskflow-production-api.up.railway.app';
 
 /* ── Auth ───────────────────────────────────────────────── */
 async function refreshAccessToken() {

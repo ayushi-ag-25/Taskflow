@@ -136,7 +136,7 @@
                 return null
             }
 
-            const response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
+            const response = await fetch('https://taskflow-production-api.up.railway.app/api/token/refresh/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh: refresh })
@@ -186,7 +186,7 @@
             name = document.getElementById('name').value
             description = document.getElementById('des').value
 
-            const response = await safe_fetch('http://127.0.0.1:8000/api/projects/', {
+            const response = await safe_fetch('https://taskflow-production-api.up.railway.app/api/projects/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
