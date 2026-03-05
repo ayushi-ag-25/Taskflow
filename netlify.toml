@@ -1,4 +1,3 @@
 [build]
   base = "frontend"
   publish = "frontend"
-  ignore = "git diff --quiet HEAD^ HEAD -- frontend/"
