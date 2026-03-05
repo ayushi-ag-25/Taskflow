@@ -6,10 +6,9 @@ A full-stack project and task management web application built with **Django RES
 
 ## 🌐 Live Demo
 
-| Service | URL |
+| Service | Link |
 |---|---|
-| Frontend | `https://taskflow.netlify.app` |
-| Backend API | `taskflow-production-api.up.railway.app` |
+| 🖥️ Frontend | [Open TaskFlow App](https://projects-with-taskflow.netlify.app/) |
 
 ---
 
@@ -24,38 +23,40 @@ A full-stack project and task management web application built with **Django RES
 ### 🔐 Authentication
 - JWT-based login and logout
 - Auto token refresh using refresh tokens
-- Protected routes — unauthenticated users redirected to login
+- Protected routes — unauthenticated users redirected to login automatically
 - Tokens stored in `localStorage`, cleared on logout
 
 ### 📁 Projects
-- Create new projects
-- View all owned and member projects separately on the dashboard
+- Create new projects with name and description
+- View all **owned** and **member** projects separately on the dashboard
 - Owner and Member role tags on each project card
 - Project metadata — member count, task count, created date
-- Delete owned projects (with all tasks)
-- Edit project description inline
+- Delete owned projects (cascades to all tasks)
+- Edit project description inline with Save/Cancel
 
 ### 👥 Members
-- Add members to a project via username search with autocomplete
-- Remove members from a project
-- When a member is removed, their assigned tasks are automatically unassigned (via Django signal)
-- Member chips with remove button on project details page
+- Add members via username search with live autocomplete dropdown
+- Remove members from a project with one click
+- When a member is removed, their assigned tasks are automatically **unassigned** via Django signal
+- Member chips displayed with × remove button
 
 ### ✅ Tasks
 - Create tasks with title, description, assignee, due date
-- Assign tasks to project owner or any project member
+- Assign tasks to project **owner** or any project member
 - Edit tasks inline — change title, description, assignee, status, due date
-- Delete tasks
+- Delete tasks with confirmation
 - Mark tasks as **Completed** or reopen back to **Pending** directly from dashboard
-- Overdue tasks highlighted in red with ⚠ warning on dashboard
+- Overdue tasks highlighted in red with ⚠ warning
 - Task count pill kept in sync on project details page
+- After editing or creating a task — task list reloads from backend automatically
 
 ### 🧭 Dashboard
-- Owned projects open in a **modal overlay** (full management)
-- Member projects load tasks **inline** in the task panel (read-only)
-- "My Tasks" view shows all tasks assigned to the current user across all projects
-- Refresh button to reset task panel
+- Owned projects open in a **modal overlay** (full management UI)
+- Member projects load tasks **inline** in the task panel (read-only view)
+- "My Tasks" panel shows all tasks assigned to current user across all projects
+- Refresh button to reset task panel back to all tasks
 - Time-based greeting (Good morning / afternoon / evening)
+- Overdue task detection with red highlight
 
 ---
 
@@ -68,9 +69,10 @@ A full-stack project and task management web application built with **Django RES
 | Django REST Framework | REST API |
 | SimpleJWT | JWT authentication |
 | django-cors-headers | CORS for frontend-backend separation |
-| PostgreSQL | Production database |
-| SQLite | Development database |
+| PostgreSQL | Production database (Railway) |
+| SQLite | Local development database |
 | Gunicorn | Production WSGI server |
+| Whitenoise | Static file serving |
 | Railway | Backend hosting |
 
 ### Frontend
@@ -89,32 +91,42 @@ A full-stack project and task management web application built with **Django RES
 ```
 taskflow/
 │
-├── taskflow-backend/
+├── backend/
 │   ├── manage.py
 │   ├── requirements.txt
 │   ├── Procfile
+│   ├── create_superuser.py
 │   ├── taskflow/
 │   │   ├── settings.py
 │   │   ├── urls.py
 │   │   └── wsgi.py
-│   └── projects/
-│       ├── models.py          # Project, Task, ProjectMembership
-│       ├── views.py           # ProjectViewSet, TaskViewSet, MembershipViewSet
-│       ├── serializers.py     # All serializers
-│       ├── permissions.py     # IsOwnerOrMember
-│       ├── signals.py         # Auto-unassign tasks on member removal
-│       ├── apps.py
-│       └── urls.py
+│   ├── projects/
+│   │   ├── models.py          # Project, Task, ProjectMembership
+│   │   ├── views.py           # ProjectViewSet, TaskViewSet, MembershipViewSet
+│   │   ├── serializers.py     # All serializers
+│   │   ├── permissions.py     # IsOwnerOrMember
+│   │   ├── signals.py         # Auto-unassign tasks on member removal
+│   │   ├── apps.py            # Signal registration
+│   │   └── urls.py
+│   └── accounts/
+│       ├── models.py          # Custom User model
+│       ├── views.py           # User search endpoint
+│       └── serializers.py
 │
-└── taskflow-frontend/
-    ├── config.js              # API base URL config
-    ├── index.html             # Dashboard
-    ├── index.js               # Dashboard logic
-    ├── index.css              # Dashboard styles
-    ├── login.html             # Login page
-    ├── project_details.html   # Project details page
-    ├── pd.js                  # Project details logic
-    └── create_project.html    # Create project page
+├── frontend/
+│   ├── config.js              # API base URL
+│   ├── index.html             # Dashboard page
+│   ├── index.js               # Dashboard logic
+│   ├── index.css              # Dashboard styles
+│   ├── login.html             # Login page
+│   ├── project_details.html   # Project details page
+│   ├── pd.js                  # Project details logic
+│   └── create_project.html    # Create project page
+│
+├── netlify.toml               # Netlify deploy config
+├── railway.json               # Railway deploy config
+├── README.md
+└── .gitignore
 ```
 
 ---
@@ -124,9 +136,9 @@ taskflow/
 ### Auth
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/api/token/` | Login — get access + refresh token |
-| POST | `/api/token/refresh/` | Refresh access token |
-| GET | `/api/me/` | Get current logged-in user |
+| POST | `/api/token/` | Login — returns access + refresh token |
+| POST | `/api/token/refresh/` | Refresh expired access token |
+| GET | `/api/me/` | Get current logged-in user info |
 
 ### Projects
 | Method | Endpoint | Description |
@@ -135,8 +147,8 @@ taskflow/
 | GET | `/api/projects/?m=1` | Get member projects |
 | GET | `/api/projects/?project=:id` | Get single project with tasks and members |
 | POST | `/api/projects/` | Create new project |
-| PATCH | `/api/projects/:id/` | Update project (e.g. description) |
-| DELETE | `/api/projects/:id/` | Delete project |
+| PATCH | `/api/projects/:id/` | Update project description |
+| DELETE | `/api/projects/:id/` | Delete project and all its tasks |
 
 ### Tasks
 | Method | Endpoint | Description |
@@ -144,7 +156,7 @@ taskflow/
 | GET | `/api/tasks/` | Get all tasks for current user |
 | GET | `/api/tasks/?project=:id` | Get tasks for a specific project |
 | POST | `/api/tasks/` | Create new task |
-| PATCH | `/api/tasks/:id/` | Edit task |
+| PATCH | `/api/tasks/:id/` | Edit task fields |
 | DELETE | `/api/tasks/:id/` | Delete task |
 
 ### Memberships
@@ -157,7 +169,7 @@ taskflow/
 ### User Search
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/users/search/?q=:query` | Search users by username |
+| GET | `/users/search/?q=:query` | Search users by username (autocomplete) |
 
 ---
 
@@ -178,7 +190,7 @@ taskflow/
 | title | CharField | Task title |
 | description | TextField | Task description |
 | project | ForeignKey | Project the task belongs to |
-| assigned_to | ForeignKey | User assigned to the task |
+| assigned_to | ForeignKey | User assigned (SET_NULL on delete) |
 | status | CharField | `pending` / `completed` |
 | due_date | DateField | Optional due date |
 | created_at | DateTimeField | Auto timestamp |
@@ -200,89 +212,83 @@ taskflow/
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/yourusername/taskflow-backend.git
-cd taskflow-backend
+git clone https://github.com/ayushi-ag-25/Taskflow.git
+cd Taskflow/backend
 
 # 2. Create virtual environment
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Windows
+venv\Scripts\activate
+
+# Mac/Linux
+source venv/bin/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Create .env file
-echo "SECRET_KEY=your-secret-key-here" > .env
-echo "DEBUG=True" >> .env
-
-# 5. Run migrations
+# 4. Run migrations
 python manage.py migrate
 
-# 6. Create superuser
+# 5. Create superuser
 python manage.py createsuperuser
 
-# 7. Run server
+# 6. Run server
 python manage.py runserver
 ```
 
 ### Frontend
 
 ```bash
-# Clone the repo
-git clone https://github.com/yourusername/taskflow-frontend.git
-cd taskflow-frontend
+# Navigate to frontend folder
+cd Taskflow/frontend
 
 # Update config.js for local development
 # const API_BASE = 'http://127.0.0.1:8000';
 
-# Open index.html in browser or use Live Server in VS Code
+# Open index.html with Live Server in VS Code
 ```
 
 ---
 
 ## 🚀 Deployment
 
-### Backend → Railway
+### Backend → [Railway](https://railway.app)
 
-1. Push backend to GitHub
-2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
-3. Add PostgreSQL plugin
+1. Connect GitHub repo on Railway
+2. Set root directory to `backend/`
+3. Add PostgreSQL database
 4. Set environment variables:
    ```
    SECRET_KEY=your-production-secret-key
    DEBUG=False
-   DATABASE_URL=postgresql://...  (auto-set by Railway)
+   DATABASE_URL=postgresql://...  (auto-set by Railway PostgreSQL plugin)
    ```
-5. Railway auto-detects `Procfile` and deploys
+5. Set start command:
+   ```
+   cd backend && python manage.py migrate && python manage.py collectstatic --noinput && python create_superuser.py && gunicorn taskflow.wsgi --bind 0.0.0.0:$PORT
+   ```
 
-### Frontend → Netlify
+### Frontend → [Netlify](https://netlify.com)
 
-1. Update `config.js` with your Railway URL:
+1. Update `config.js` with Railway URL:
    ```js
-   const API_BASE = 'https://taskflow-api.railway.app';
+   const API_BASE = 'https://taskflow-production-api.up.railway.app';
    ```
-2. Push frontend to GitHub
-3. Go to [netlify.com](https://netlify.com) → New Site → Import from GitHub
-4. Build command: *(leave empty)*
-5. Publish directory: `/` *(root)*
-6. Deploy
-
-### CORS — Important
-In Django `settings.py`, add your Netlify URL:
-```python
-CORS_ALLOWED_ORIGINS = [
-    'https://taskflow.netlify.app',
-]
-```
+2. Connect GitHub repo on Netlify
+3. Set publish directory to `frontend`
+4. Deploy — no build command needed
 
 ---
 
 ## 🔒 Security Notes
 
-- `SECRET_KEY` is always set via environment variable, never hardcoded
-- JWT tokens stored in `localStorage` — access token short-lived, refresh token used to renew
+- `SECRET_KEY` is set via Railway environment variable — never hardcoded
+- JWT access tokens are short-lived, refresh tokens renew them automatically
 - All API endpoints require authentication except `/api/token/`
-- Owner-only actions (delete project, manage members) protected by `IsOwnerOrMember` permission class
-- Frontend ownership checks are UX only — real protection is enforced on the backend
+- Owner-only actions protected by `IsOwnerOrMember` permission class on backend
+- Frontend ownership checks are UX only — real protection enforced on backend
+- CORS configured to allow only trusted origins
 
 ---
 
@@ -304,4 +310,7 @@ MIT License — feel free to use this project for learning or as a base for your
 
 <div align="center">
   Built with ❤️ using Django & Vanilla JS
+  <br><br>
+  <a href="https://projects-with-taskflow.netlify.app/">🖥️ Live App</a> &nbsp;·&nbsp;
+  <a href="https://github.com/ayushi-ag-25/Taskflow">📦 GitHub Repo</a>
 </div>
