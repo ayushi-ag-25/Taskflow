@@ -23,12 +23,6 @@ A full-stack project and task management web application built with **Django RES
 
 ---
 
-## 📸 Screenshots
-
-> Dashboard · Project Details · Task Management
-
----
-
 ## ✨ Features
 
 ### 🔐 Authentication
