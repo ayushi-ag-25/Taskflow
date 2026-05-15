@@ -1,6 +1,6 @@
 # TaskFlow 🗂️
 
-A full-stack project and task management web application built with **Django REST Framework** on the backend and **Vanilla JavaScript** on the frontend. Users can create projects, manage members, assign tasks, track progress, and collaborate — all from a clean, responsive dashboard.
+A full-stack project and task management web application built with **Django REST Framework** on the backend and **Vanilla JavaScript** on the frontend. Users can create projects, manage members, assign tasks, track progress, and collaborate — all from a clean, responsive dashboard. 
 
 ---
 
